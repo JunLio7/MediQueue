@@ -6,5 +6,9 @@ public class RegularPatient extends Patient {
     }
 
     @Override
-    public String getType() { return "Regular Patient"; }
+    public String getType() {
+        return "Regular Patient";
+    }
+
+    // Use base displayInfo(), no need to override
 }
