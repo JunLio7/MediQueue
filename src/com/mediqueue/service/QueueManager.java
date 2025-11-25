@@ -26,12 +26,14 @@ public class QueueManager {
         }
         System.out.println("Patient Queue:");
         for (Patient p : queue) {
-            System.out.println(p);
+            p.displayInfo(); // polymorphic call, prints once per patient
         }
     }
 
     public Optional<Patient> findPatientByName(String name) {
-        return queue.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
+        return queue.stream()
+                .filter(p -> p.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     // UPDATE
