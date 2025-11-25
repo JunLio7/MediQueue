@@ -10,5 +10,4 @@ public class RegularPatient extends Patient {
         return "Regular Patient";
     }
 
-    // Use base displayInfo(), no need to override
 }
