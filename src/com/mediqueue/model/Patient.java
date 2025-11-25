@@ -1,7 +1,6 @@
 package com.mediqueue.model;
 
 public abstract class Patient {
-    // Encapsulation: private fields with getters/setters
     private String name;
     private int age;
     private String condition;
@@ -14,24 +13,22 @@ public abstract class Patient {
         this.priority = priority;
     }
 
-    // Encapsulation: getters and setters
+    // Encapsulation
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
-
     public String getCondition() { return condition; }
     public void setCondition(String condition) { this.condition = condition; }
-
     public int getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
 
-    // Polymorphism: enforce subclasses to implement their type
+    // Polymorphism: subclasses must implement type
     public abstract String getType();
 
-    @Override
-    public String toString() {
-        return name + " - " + getType() + " - Age: " + age + " - Condition: " + condition + " - Priority: " + priority;
+    // Display patient info
+    public void displayInfo() {
+        System.out.println(getName() + " - " + getType() + " - Age: " + getAge() +
+                           " - Condition: " + getCondition() + " - Priority: " + getPriority());
     }
 }
