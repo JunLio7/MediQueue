@@ -6,5 +6,13 @@ public class ScheduledPatient extends Patient {
     }
 
     @Override
-    public String getType() { return "Scheduled Patient"; }
+    public String getType() {
+        return "Scheduled Patient";
+    }
+
+    @Override
+    public void displayInfo() {
+        System.out.print("Scheduled: ");
+        super.displayInfo(); // prints base info once
+    }
 }
