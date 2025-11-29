@@ -23,7 +23,6 @@ public abstract class Patient {
     public int getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
 
-    // Polymorphism: subclasses must implement type
     public abstract String getType();
 
     // Display patient info
