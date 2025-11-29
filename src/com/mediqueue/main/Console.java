@@ -2,6 +2,7 @@ package com.mediqueue.main;
 
 import com.mediqueue.model.*;
 import com.mediqueue.service.QueueManager;
+
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -65,7 +66,8 @@ public class Console {
         };
 
         String name = getNonEmptyString("Enter name: ");
-        int age = getValidIntInput("Enter age: ", 1, Integer.MAX_VALUE);
+        int age = getValidAge("Enter age: "); 
+        
         String condition = getNonEmptyString("Enter condition: ");
 
         Patient newPatient;
@@ -132,5 +134,20 @@ public class Console {
             }
         }
         return number;
+    }
+
+    private int getValidAge(String prompt) {  // <-- new method for age
+        int age;
+        while (true) {
+            try {
+                System.out.print(prompt);
+                age = Integer.parseInt(scanner.nextLine().trim());
+                if (age < 1 || age > 150) throw new NumberFormatException();
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Enter valid age");
+            }
+        }
+        return age;
     }
 }
