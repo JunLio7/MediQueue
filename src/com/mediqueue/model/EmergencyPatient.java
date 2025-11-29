@@ -12,7 +12,6 @@ public class EmergencyPatient extends Patient {
 
     @Override
     public void displayInfo() {
-
         super.displayInfo(); // prints base info once
     }
 }

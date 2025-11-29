@@ -53,7 +53,6 @@ public class UpdateDialog extends JDialog {
         gbc.gridx = 1; add(priorityField, gbc);
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; add(saveButton, gbc);
 
-        // Listeners
         typeCombo.addActionListener(e -> {
             String type = (String) typeCombo.getSelectedItem();
             switch (type) {
@@ -66,7 +65,6 @@ public class UpdateDialog extends JDialog {
                     priorityField.setEnabled(false);
                 }
                 default -> {
-                    // Scheduled
                     priorityField.setText("");
                     priorityField.setEnabled(true);
                 }
@@ -74,29 +72,34 @@ public class UpdateDialog extends JDialog {
         });
 
         saveButton.addActionListener(e -> {
-            String condition = conditionField.getText().trim();
-            String type = (String) typeCombo.getSelectedItem();
-            int priority;
-
             try {
-                priority = Integer.parseInt(priorityField.getText().trim());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Priority must be a number!", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+                String condition = conditionField.getText().trim();
+                String type = (String) typeCombo.getSelectedItem();
+                int priority;
 
-            Patient updated;
-            switch (type) {
-                case "Regular" -> updated = new RegularPatient(selected.getName(), selected.getAge(), condition);
-                case "Emergency" -> updated = new EmergencyPatient(selected.getName(), selected.getAge(), condition);
-                case "Scheduled" -> updated = new ScheduledPatient(selected.getName(), selected.getAge(), condition, priority);
-                default -> { return; }
-            }
+                if (condition.isEmpty()) throw new Exception("Condition cannot be empty!");
 
-            int index = queue.getAllPatients().indexOf(selected);
-            queue.getAllPatients().set(index, updated);
-            refreshCallback.accept(null);
-            dispose();
+                try {
+                    priority = Integer.parseInt(priorityField.getText().trim());
+                    if (priority < 1) throw new Exception("Priority must be a positive number!");
+                } catch (NumberFormatException ex) {
+                    throw new Exception("Priority must be a number!");
+                }
+
+                Patient updated = switch (type) {
+                    case "Regular" -> new RegularPatient(selected.getName(), selected.getAge(), condition);
+                    case "Emergency" -> new EmergencyPatient(selected.getName(), selected.getAge(), condition);
+                    case "Scheduled" -> new ScheduledPatient(selected.getName(), selected.getAge(), condition, priority);
+                    default -> throw new Exception("Invalid patient type");
+                };
+
+                int index = queue.getAllPatients().indexOf(selected);
+                queue.getAllPatients().set(index, updated);
+                refreshCallback.accept(null);
+                dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }
