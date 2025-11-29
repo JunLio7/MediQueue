@@ -122,43 +122,46 @@ public class InputPanel extends JPanel {
     }
 
     private void addPatient() {
-        String name = nameField.getText().trim();
-        String ageText = ageField.getText().trim();
-        String condition = conditionField.getText().trim();
-        String type = (String) typeComboBox.getSelectedItem();
-        String priorityText = priorityField.getText().trim();
+        try {
+            String name = nameField.getText().trim();
+            String ageText = ageField.getText().trim();
+            String condition = conditionField.getText().trim();
+            String type = (String) typeComboBox.getSelectedItem();
+            String priorityText = priorityField.getText().trim();
 
-        if (name.isEmpty()) { showError("Name cannot be empty!"); return; }
-        if (condition.isEmpty()) { showError("Condition cannot be empty!"); return; }
+            if (name.isEmpty()) throw new Exception("Name cannot be empty!");
+            if (condition.isEmpty()) throw new Exception("Condition cannot be empty!");
 
-        int age;
-        try { age = Integer.parseInt(ageText); }
-        catch (NumberFormatException e) { showError("Age must be a number!"); return; }
+            int age;
+            try { age = Integer.parseInt(ageText); }
+            catch (NumberFormatException e) { throw new Exception("Age must be a number!"); }
 
-        int priority;
-        switch (type) {
-            case "Scheduled" -> {
-                try { priority = Integer.parseInt(priorityText); }
-                catch (NumberFormatException e) { showError("Priority must be a number!"); priorityField.setText(""); return; }
+            int priority;
+            switch (type) {
+                case "Scheduled" -> {
+                    try { priority = Integer.parseInt(priorityText); }
+                    catch (NumberFormatException e) { throw new Exception("Priority must be a number!"); }
+                }
+                case "Emergency" -> priority = 1;
+                default -> priority = 3;
             }
-            case "Emergency" -> priority = 1;
-            default -> priority = 3;
+
+            boolean exists = queue.getAllPatients().stream().anyMatch(p -> p.getName().equalsIgnoreCase(name));
+            if (exists) throw new Exception("Patient with this name already exists!");
+
+            Patient p = switch (type) {
+                case "Regular" -> new RegularPatient(name, age, condition);
+                case "Emergency" -> new EmergencyPatient(name, age, condition);
+                case "Scheduled" -> new ScheduledPatient(name, age, condition, Integer.parseInt(priorityText));
+                default -> throw new Exception("Invalid type");
+            };
+
+            queue.addPatient(p);
+            refreshCallback.run();
+            clearInputs();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        boolean exists = queue.getAllPatients().stream().anyMatch(p -> p.getName().equalsIgnoreCase(name));
-        if (exists) { showError("Patient with this name already exists!"); return; }
-
-        Patient p;
-        switch (type) {
-            case "Regular" -> p = new RegularPatient(name, age, condition);
-            case "Emergency" -> p = new EmergencyPatient(name, age, condition);
-            case "Scheduled" -> p = new ScheduledPatient(name, age, condition, priority);
-            default -> { showError("Invalid type"); return; }
-        }
-
-        queue.addPatient(p);
-        refreshCallback.run();
-        clearInputs();
     }
 
     private void clearInputs() {
@@ -171,10 +174,14 @@ public class InputPanel extends JPanel {
     }
 
     private void deletePatient() {
-        int row = tablePanel.getSelectedRow();
-        if (row == -1) { showError("Select a patient to delete!"); return; }
-        queue.getAllPatients().remove(row);
-        refreshCallback.run();
+        try {
+            int row = tablePanel.getSelectedRow();
+            if (row == -1) throw new Exception("Select a patient to delete!");
+            queue.getAllPatients().remove(row);
+            refreshCallback.run();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void filterTable() {
@@ -187,15 +194,14 @@ public class InputPanel extends JPanel {
 
     private void openUpdateDialog() {
         int row = tablePanel.getSelectedRow();
-        if (row == -1) { showError("Select a patient to update!"); return; }
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Select a patient to update!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         Patient selected = queue.getAllPatients().get(row);
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         UpdateDialog dialog = new UpdateDialog(parentFrame, selected, queue, v -> refreshCallback.run());
         dialog.setVisible(true);
-    }
-
-    private void showError(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Input Error", JOptionPane.ERROR_MESSAGE);
     }
 }
