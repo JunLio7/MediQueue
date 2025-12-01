@@ -130,6 +130,11 @@ public class InputPanel extends JPanel {
             String priorityText = priorityField.getText().trim();
 
             if (name.isEmpty()) throw new Exception("Name cannot be empty!");
+            if (!name.matches("[a-zA-Z\\s]+")) {
+            throw new Exception("Name should only contain letters and spaces!");
+        }
+
+            if (name.isEmpty()) throw new Exception("Name cannot be empty!");
             if (condition.isEmpty()) throw new Exception("Condition cannot be empty!");
 
             int age;
