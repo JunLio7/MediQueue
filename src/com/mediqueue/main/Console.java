@@ -136,7 +136,7 @@ public class Console {
         return number;
     }
 
-    private int getValidAge(String prompt) {  // <-- new method for age
+    private int getValidAge(String prompt) {  
         int age;
         while (true) {
             try {
